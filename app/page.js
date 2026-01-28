@@ -118,21 +118,22 @@ export default function HoldingPage() {
           left: 0,
           width: '100vw',
           height: '100vh',
-          zIndex: -1,
+          zIndex: 0,
           pointerEvents: 'none'
         }} 
       />
       
-      {/* Load glitch.js script */}
+      {/* Load glitchGL.min.js script */}
       <Script 
-        src="/glitch.js" 
+        src="/glitchGL.min.js" 
+        strategy="afterInteractive"
         onLoad={() => {
-          // Initialize glitch on the canvas
-          if (typeof window !== 'undefined' && window.GlitchGL) {
-            const canvas = document.getElementById('glitch-canvas')
-            if (canvas) {
-              new window.GlitchGL(canvas)
-            }
+          const canvas = document.getElementById('glitch-canvas');
+          if (canvas && window.glitchGL) {
+            new window.glitchGL(canvas, {
+              amount: 0.02,
+              seed: 0.5
+            });
           }
         }} 
       />
@@ -144,7 +145,8 @@ export default function HoldingPage() {
         position: 'relative',
         overflow: 'hidden',
         fontFamily: "'TWK Lausanne', sans-serif",
-        transition: 'background-color 0.8s ease-out'
+        transition: 'background-color 0.8s ease-out',
+        zIndex: 1
       }}>
       {/* Rose lockup - Centered with multiply blend */}
       <div style={{
@@ -258,7 +260,7 @@ export default function HoldingPage() {
               transition: 'filter 0.3s ease-out',
               width: '100%'
             }}>
-              Thanks! new incoming....
+              Thanks! news incoming....
             </p>
           </div>
         )}
@@ -284,15 +286,20 @@ export default function HoldingPage() {
         rel="noopener noreferrer"
         style={{
           position: 'fixed',
-          bottom: '40px',
+          bottom: '100px',
           right: '40px',
           color: '#000',
-          fontSize: '16px',
           textDecoration: 'none',
-          fontFamily: "'TWK Lausanne', sans-serif"
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
-        IG
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
       </a>
 
       {/* CSS for custom font and black placeholder */}
