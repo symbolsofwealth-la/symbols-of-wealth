@@ -109,37 +109,33 @@ export default function HoldingPage() {
 
   return (
     <>
-      {/* Load dependencies: Three.js → GSAP → glitchGL */}
-      <Script 
-        src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" 
-        strategy="beforeInteractive" 
+      {/* Glitch canvas - Background layer */}
+      <canvas 
+        id="glitch-canvas" 
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} 
       />
-      <Script 
-        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" 
-        strategy="beforeInteractive" 
-      />
+      
+      {/* Load glitchGL.min.js script */}
       <Script 
         src="/glitchGL.min.js" 
         strategy="afterInteractive"
         onLoad={() => {
-          setTimeout(() => {
-            if (typeof window.glitchGL !== 'undefined') {
-              window.glitchGL({
-                target: '.glitchGL',
-                intensity: 3.0,
-                interaction: {
-                  enabled: false
-                },
-                effects: {
-                  glitch: {
-                    rgbShift: 2.0,
-                    digitalNoise: 1.5
-                  }
-                }
-              });
-            }
-          }, 100);
-        }}
+          const canvas = document.getElementById('glitch-canvas');
+          if (canvas && window.glitchGL) {
+            new window.glitchGL(canvas, {
+              amount: 0.02,
+              seed: 0.5
+            });
+          }
+        }} 
       />
 
       <div style={{
@@ -153,20 +149,16 @@ export default function HoldingPage() {
         zIndex: 1
       }}>
       {/* Rose lockup - Centered with multiply blend */}
-      <div 
-        className="glitchGL"
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          mixBlendMode: 'multiply',
-          zIndex: 10
-        }}
-      >
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        mixBlendMode: 'multiply'
+      }}>
         <img 
           src="/SOW_lockup.png"
           alt="Symbols of Wealth"
@@ -186,8 +178,7 @@ export default function HoldingPage() {
         transform: 'translateX(-50%)',
         width: '100%',
         maxWidth: '400px',
-        padding: '0 20px',
-        zIndex: 20
+        padding: '0 20px'
       }}>
         <div style={{ position: 'relative', width: '100%' }}>
           {!showSuccess ? (
