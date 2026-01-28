@@ -148,6 +148,21 @@ export default function HoldingPage() {
         transition: 'background-color 0.8s ease-out',
         zIndex: 1
       }}>
+      {/* Coming soon text */}
+      <div className="coming-soon-text" style={{
+        position: 'fixed',
+        left: '25%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+        fontSize: '16px',
+        fontFamily: "'TWK Lausanne', sans-serif",
+        fontWeight: 500,
+        color: '#000',
+        zIndex: 10
+      }}>
+        coming soon...
+      </div>
+
       {/* Rose lockup - Centered with multiply blend */}
       <div style={{
         position: 'fixed',
@@ -322,6 +337,11 @@ export default function HoldingPage() {
           .email-signup-container {
             max-width: 90% !important;
             padding: 0 20px !important;
+          }
+          .coming-soon-text {
+            top: 40px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
           }
         }
       `}</style>
