@@ -9,7 +9,7 @@ export default function HoldingPage() {
   const [mouseX, setMouseX] = useState(null)
   const [mouseY, setMouseY] = useState(null)
   
-  const colors = ['#FF0000', '#FF9999', '#B8E6E6', '#FF0000', '#FFFF00', '#90EE90', '#FF0000', '#00FF00', '#FFFF66', '#FF0000']
+  const colors = ['#FF4444', '#FF6B6B', '#FF8A8A', '#E85D5D', '#FF5252', '#E67373']
 
   // Convert hex to RGB
   const hexToRgb = (hex) => {
