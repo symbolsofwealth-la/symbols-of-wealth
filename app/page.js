@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Script from 'next/script'
 
 export default function HoldingPage() {
   const [email, setEmail] = useState('')
@@ -8,6 +9,7 @@ export default function HoldingPage() {
   const [isFocused, setIsFocused] = useState(false)
   const [mouseX, setMouseX] = useState(null)
   const [mouseY, setMouseY] = useState(null)
+  const [showSuccess, setShowSuccess] = useState(false)
   
   const colors = ['#FF4444', '#FF6B6B', '#FF8A8A', '#E85D5D', '#FF5252', '#E67373']
 
@@ -88,7 +90,12 @@ export default function HoldingPage() {
       })
 
       if (response.ok) {
+        // Trigger blur out effect
         setStatus('success')
+        // Wait for blur out, then show success message
+        setTimeout(() => {
+          setShowSuccess(true)
+        }, 300)
         setEmail('')
       } else {
         setStatus('error')
@@ -101,15 +108,44 @@ export default function HoldingPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      width: '100vw',
-      backgroundColor: getBackgroundColor(),
-      position: 'relative',
-      overflow: 'hidden',
-      fontFamily: "'TWK Lausanne', sans-serif",
-      transition: 'background-color 0.8s ease-out'
-    }}>
+    <>
+      {/* Glitch canvas - Background layer */}
+      <canvas 
+        id="glitch-canvas" 
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }} 
+      />
+      
+      {/* Load glitch.js script */}
+      <Script 
+        src="/glitch.js" 
+        onLoad={() => {
+          // Initialize glitch on the canvas
+          if (typeof window !== 'undefined' && window.GlitchGL) {
+            const canvas = document.getElementById('glitch-canvas')
+            if (canvas) {
+              new window.GlitchGL(canvas)
+            }
+          }
+        }} 
+      />
+
+      <div style={{
+        minHeight: '100vh',
+        width: '100vw',
+        backgroundColor: getBackgroundColor(),
+        position: 'relative',
+        overflow: 'hidden',
+        fontFamily: "'TWK Lausanne', sans-serif",
+        transition: 'background-color 0.8s ease-out'
+      }}>
       {/* Rose lockup - Centered with multiply blend */}
       <div style={{
         position: 'fixed',
@@ -142,73 +178,92 @@ export default function HoldingPage() {
         maxWidth: '400px',
         padding: '0 20px'
       }}>
-        <form onSubmit={handleSubmit} style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0',
-          width: '100%',
-          position: 'relative'
-        }}>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            placeholder={isFocused ? '' : 'sign up for updates here'}
-            required
-            disabled={isSubmitting}
-            style={{
-              width: '100%',
-              padding: '12px 50px 12px 16px',
-              fontSize: '12px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderRadius: '0',
-              color: '#000',
-              outline: 'none',
-              fontWeight: '400',
-              textAlign: 'center',
-              fontFamily: "'TWK Lausanne', sans-serif"
-            }}
-          />
-
-          {email && (
-            <button
-              type="submit"
+        <div style={{ position: 'relative', width: '100%' }}>
+          {!showSuccess ? (
+          <form onSubmit={handleSubmit} style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0',
+            width: '100%',
+            position: 'relative',
+            filter: status === 'success' ? 'blur(10px)' : 'blur(0px)',
+            transition: 'filter 0.3s ease-out',
+            opacity: status === 'success' ? 0 : 1
+          }}>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              placeholder={isFocused ? '' : 'sign up for updates here'}
+              required
               disabled={isSubmitting}
               style={{
-                position: 'absolute',
-                right: '10px',
-                background: 'none',
+                width: '100%',
+                padding: '12px 50px 12px 16px',
+                fontSize: '12px',
+                backgroundColor: 'transparent',
                 border: 'none',
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                padding: '8px',
-                fontSize: '16px',
+                borderRadius: '0',
                 color: '#000',
-                opacity: isSubmitting ? 0.3 : 1,
-                transition: 'opacity 0.2s',
+                outline: 'none',
+                fontWeight: '400',
+                textAlign: 'center',
                 fontFamily: "'TWK Lausanne', sans-serif"
               }}
-            >
-              ↳
-            </button>
-          )}
-        </form>
+            />
 
-        {status === 'success' && (
-          <p style={{ 
-            color: '#000', 
-            fontSize: '12px', 
-            margin: '10px 0 0 0',
-            textAlign: 'center',
-            fontFamily: "'TWK Lausanne', sans-serif"
+            {email && (
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  padding: '8px',
+                  fontSize: '16px',
+                  color: '#000',
+                  opacity: isSubmitting ? 0.3 : 1,
+                  transition: 'opacity 0.2s',
+                  fontFamily: "'TWK Lausanne', sans-serif"
+                }}
+              >
+                ↳
+              </button>
+            )}
+          </form>
+        ) : (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
-            ✓ Thanks!
-          </p>
+            <p style={{ 
+              color: '#000', 
+              fontSize: '12px', 
+              margin: 0,
+              textAlign: 'center',
+              fontFamily: "'TWK Lausanne', sans-serif",
+              filter: showSuccess ? 'blur(0px)' : 'blur(10px)',
+              transition: 'filter 0.3s ease-out',
+              width: '100%'
+            }}>
+              Thanks! new incoming....
+            </p>
+          </div>
         )}
-        {status === 'error' && (
+
+        {status === 'error' && !showSuccess && (
           <p style={{ 
             color: '#000', 
             fontSize: '12px', 
@@ -219,7 +274,26 @@ export default function HoldingPage() {
             Error - try again?
           </p>
         )}
+        </div>
       </div>
+
+      {/* Instagram link - Bottom right */}
+      <a
+        href="https://www.instagram.com/symbolsofwealth/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: 'fixed',
+          bottom: '40px',
+          right: '40px',
+          color: '#000',
+          fontSize: '16px',
+          textDecoration: 'none',
+          fontFamily: "'TWK Lausanne', sans-serif"
+        }}
+      >
+        IG
+      </a>
 
       {/* CSS for custom font and black placeholder */}
       <style jsx>{`
@@ -244,6 +318,7 @@ export default function HoldingPage() {
           }
         }
       `}</style>
-    </div>
+      </div>
+    </>
   )
 }
